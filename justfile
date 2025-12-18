@@ -1,3 +1,9 @@
+install: install-rust install-typeshare
+
+install-typeshare:
+    echo "==> Installing Typeshare..."
+    cargo install typeshare-cli@1.13.4
+
 install-rust:
     #!/usr/bin/env bash
     set -euo pipefail
