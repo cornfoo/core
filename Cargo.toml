@@ -1,6 +1,17 @@
-[package]
-name = "gum-core"
-version = "0.1.0"
-edition = "2024"
+[workspace]
+resolver = "2"
+members = ["juvy"]
 
-[dependencies]
+[workspace.package]
+name = "core"
+version = "0.0.1"
+edition = "2024"
+license = "MIT"
+homepage = "https://juvy.me"
+description = "Juvy Core Rust library"
+repository = "https://github.com/juvyme/core"
+documentation = "https://github.com/juvyme"
+readme = "./README.md"
+keywords = ["crypto", "messaging", "solana", "ethereum", "web3"]
+
+[workspace.dependencies]

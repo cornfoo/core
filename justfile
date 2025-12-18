@@ -1,3 +1,6 @@
+build-juvy:
+    just juvy build
+
 install: install-rust install-typeshare
 
 install-typeshare:
@@ -16,7 +19,4 @@ install-rust:
         echo "Run 'source ~/.cargo/env' or restart your terminal"
     fi
 
-build-gum:
-    just gum build
-
-mod gum
+mod juvy

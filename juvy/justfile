@@ -1,0 +1,8 @@
+build:
+  cargo build
+
+install-ios-targets:
+    @echo "==> Installing iOS targets..."
+    rustup target add aarch64-apple-ios-sim
+    rustup target add aarch64-apple-ios
+    @echo "iOS targets installed"
