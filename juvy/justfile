@@ -6,3 +6,6 @@ install-ios-targets:
     rustup target add aarch64-apple-ios-sim
     rustup target add aarch64-apple-ios
     @echo "iOS targets installed"
+
+build-ios:
+    @echo "==> Building iOS..."
