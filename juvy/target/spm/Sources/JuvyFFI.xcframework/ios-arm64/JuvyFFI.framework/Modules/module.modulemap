@@ -1,0 +1,5 @@
+// Auto-generated module map for the Juvy framework.
+framework module JuvyFFI {
+    header "JuvyFFI.h"
+    export *
+}

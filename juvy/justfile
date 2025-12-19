@@ -6,7 +6,7 @@ install-ios-targets:
     rustup target add aarch64-apple-ios-sim
     rustup target add aarch64-apple-ios
 
-build-ios: build-targets bindgen-swift create-frameworks
+build-ios: build-targets bindgen-swift create-frameworks xcframework cp-xcframework-source
 
 export LIB_NAME := "juvy"
 export FW_NAME := "Juvy"
@@ -24,6 +24,7 @@ export GEN_SWIFT_FOLDER := "generated/swift"
 export FW_FFI_NAME := FW_NAME + "FFI"
 export FW_FFI_FILE := FW_FFI_NAME + ".framework"
 export XC_FW_FFI_NAME := FW_FFI_NAME + ".xcframework"
+export TARGET_XC_FW_FOLDER := "target/spm"
 export LIB_OUTPUT_PATH := TARGET_DIR + "/" + BUILD_MODE_TARGET + "/" + DY_LIB_NAME
 
 build-targets:
@@ -58,9 +59,8 @@ bindgen-swift:
 
 create-frameworks:
     #!/usr/bin/env bash
-    set -euo pipefail
-
     echo "==> Creating framework bundles"
+    set -euo pipefail
 
     JUVY_DIR=$(pwd)
 
@@ -76,7 +76,7 @@ create-frameworks:
     
     targets=(aarch64-apple-ios aarch64-apple-ios-sim)
     for target in "${targets[@]}"; do
-        echo "==>Creating framework for ${target}"
+        echo "==> Creating framework for ${target}"
         framework_dir="${TARGET_DIR}/${target}/${BUILD_MODE_TARGET}/${FW_FFI_FILE}"
         
         mkdir -p "${framework_dir}/Headers"
@@ -87,3 +87,21 @@ create-frameworks:
         cp "${TARGET_DIR}/${target}/${BUILD_MODE_TARGET}/${STATIC_LIB_NAME}" "${framework_dir}/${FW_FFI_NAME}"
         cp "${JUVY_DIR}/src/Info.plist" "${framework_dir}/"
     done
+
+xcframework:
+    #!/usr/bin/env bash
+    echo "==> Creating XCFramework"
+    set -euo pipefail
+
+    rm -rf ${TARGET_XC_FW_FOLDER}/Sources/${XC_FW_FFI_NAME} && mkdir -p ${TARGET_XC_FW_FOLDER}/Sources
+
+    xcodebuild -create-xcframework \
+        -framework ${TARGET_DIR}/aarch64-apple-ios/${BUILD_MODE_TARGET}/${FW_FFI_FILE} \
+        -framework ${TARGET_DIR}/aarch64-apple-ios-sim/${BUILD_MODE_TARGET}/${FW_FFI_FILE} \
+        -output ${TARGET_XC_FW_FOLDER}/Sources/${XC_FW_FFI_NAME}
+
+cp-xcframework-source:
+    #!/usr/bin/env bash
+    mkdir -p ${TARGET_XC_FW_FOLDER}/Sources/${FW_NAME}
+    cp src/Package.swift ${TARGET_XC_FW_FOLDER}
+    cp ${GEN_SWIFT_FOLDER}/${FW_NAME}.swift ${TARGET_XC_FW_FOLDER}/Sources/${FW_NAME}
