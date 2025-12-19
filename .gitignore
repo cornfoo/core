@@ -1,2 +1,5 @@
-/target
 generated/
+target/
+.build/
+*.xcframework
+*.framework
