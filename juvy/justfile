@@ -2,10 +2,51 @@ build:
   cargo build
 
 install-ios-targets:
-    @echo "==> Installing iOS targets..."
+    echo "==> Installing iOS targets..."
     rustup target add aarch64-apple-ios-sim
     rustup target add aarch64-apple-ios
-    @echo "iOS targets installed"
 
-build-ios:
-    @echo "==> Building iOS..."
+build-ios: build-targets bindgen-swift
+
+export LIB_NAME := "juvy"
+export STATIC_LIB_NAME := "lib" + LIB_NAME + ".a"
+export DY_LIB_NAME := if os() == "macos" { "libjuvy.dylib" } else { "libjuvy.so" }
+
+export BUILD_MODE_ENV := env_var_or_default("BUILD_MODE", "debug")
+export BUILD_MODE_TARGET := if BUILD_MODE_ENV == "release" { "release" } else { "debug" }
+export BUILD_FLAG := if BUILD_MODE_TARGET == "release" { "--release" } else { "" }
+
+export TARGET_DIR := "../target"
+export DEPLOYMENT_TARGET := env_var_or_default("IPHONEOS_DEPLOYMENT_TARGET", "17.4")
+export GEN_SWIFT_FOLDER := "generated/swift"
+export LIB_OUTPUT_PATH := TARGET_DIR + "/" + BUILD_MODE_TARGET + "/" + DY_LIB_NAME
+
+build-targets:
+    #!/usr/bin/env bash
+    echo "==> Building iOS deployment target: ${DEPLOYMENT_TARGET}, mode: ${BUILD_MODE_TARGET}"
+    IPHONEOS_DEPLOYMENT_TARGET=${DEPLOYMENT_TARGET} cargo build --timings \
+        --target aarch64-apple-ios \
+        --target aarch64-apple-ios-sim \
+        ${BUILD_FLAG}
+
+bindgen-swift:
+    #!/usr/bin/env bash
+    echo "==> Bindgen swift ${STATIC_LIB_NAME}"
+    mkdir -p ${GEN_SWIFT_FOLDER}
+    
+    if [ "${BUILD_MODE_TARGET}" == "release" ]; then \
+        export RUSTFLAGS="${RUSTFLAGS:-} -C strip=none"; \
+    fi
+    
+    cargo build ${BUILD_FLAG}
+    
+    if [ ! -f "${LIB_OUTPUT_PATH}" ]; then \
+        echo "Failed to locate ${DY_LIB_NAME} at ${LIB_OUTPUT_PATH} (mode ${BUILD_MODE_TARGET})"; \
+        exit 1; \
+    fi
+    
+    cargo run -p xtask -- generate \
+        --library "${LIB_OUTPUT_PATH}" \
+        --language swift \
+        --crate "${LIB_NAME}" \
+        --out-dir "${GEN_SWIFT_FOLDER}"
