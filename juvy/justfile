@@ -6,9 +6,10 @@ install-ios-targets:
     rustup target add aarch64-apple-ios-sim
     rustup target add aarch64-apple-ios
 
-build-ios: build-targets bindgen-swift
+build-ios: build-targets bindgen-swift create-frameworks
 
 export LIB_NAME := "juvy"
+export FW_NAME := "Juvy"
 export STATIC_LIB_NAME := "lib" + LIB_NAME + ".a"
 export DY_LIB_NAME := if os() == "macos" { "libjuvy.dylib" } else { "libjuvy.so" }
 
@@ -19,6 +20,10 @@ export BUILD_FLAG := if BUILD_MODE_TARGET == "release" { "--release" } else { ""
 export TARGET_DIR := "../target"
 export DEPLOYMENT_TARGET := env_var_or_default("IPHONEOS_DEPLOYMENT_TARGET", "17.4")
 export GEN_SWIFT_FOLDER := "generated/swift"
+
+export FW_FFI_NAME := FW_NAME + "FFI"
+export FW_FFI_FILE := FW_FFI_NAME + ".framework"
+export XC_FW_FFI_NAME := FW_FFI_NAME + ".xcframework"
 export LIB_OUTPUT_PATH := TARGET_DIR + "/" + BUILD_MODE_TARGET + "/" + DY_LIB_NAME
 
 build-targets:
@@ -44,9 +49,41 @@ bindgen-swift:
         echo "Failed to locate ${DY_LIB_NAME} at ${LIB_OUTPUT_PATH} (mode ${BUILD_MODE_TARGET})"; \
         exit 1; \
     fi
-    
+
     cargo run -p xtask -- generate \
         --library "${LIB_OUTPUT_PATH}" \
         --language swift \
         --crate "${LIB_NAME}" \
         --out-dir "${GEN_SWIFT_FOLDER}"
+
+create-frameworks:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    echo "==> Creating framework bundles"
+
+    JUVY_DIR=$(pwd)
+
+    MODULE_MAP="$(printf '%s\n' \
+    "// Auto-generated module map for the Juvy framework." \
+    "framework module ${FW_FFI_NAME} {" \
+    "    header \"${FW_FFI_NAME}.h\"" \
+    "    export *" \
+    "}")"
+
+    cd ${TARGET_DIR}
+    find . -type d -name "${FW_FFI_FILE}" -exec rm -rf {} + 2>/dev/null || true
+    
+    targets=(aarch64-apple-ios aarch64-apple-ios-sim)
+    for target in "${targets[@]}"; do
+        echo "==>Creating framework for ${target}"
+        framework_dir="${TARGET_DIR}/${target}/${BUILD_MODE_TARGET}/${FW_FFI_FILE}"
+        
+        mkdir -p "${framework_dir}/Headers"
+        mkdir -p "${framework_dir}/Modules"
+        
+        echo "${MODULE_MAP}" > "${framework_dir}/Modules/module.modulemap"
+        cp "${JUVY_DIR}/${GEN_SWIFT_FOLDER}/${FW_FFI_NAME}.h" "${framework_dir}/Headers/"
+        cp "${TARGET_DIR}/${target}/${BUILD_MODE_TARGET}/${STATIC_LIB_NAME}" "${framework_dir}/${FW_FFI_NAME}"
+        cp "${JUVY_DIR}/src/Info.plist" "${framework_dir}/"
+    done

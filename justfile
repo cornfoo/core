@@ -1,6 +1,9 @@
 build-juvy:
     just juvy build
 
+build-ios:
+    just juvy build-ios
+
 install: install-rust install-typeshare
 
 install-typeshare:
