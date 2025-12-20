@@ -1,8 +1,11 @@
-build-juvy:
-    just juvy build
+list:
+    just --list
+
+build-juvycore:
+    just juvycore build
 
 build-ios:
-    just juvy build-ios
+    just juvycore build-ios
 
 install: install-rust install-typeshare
 
@@ -22,4 +25,4 @@ install-rust:
         echo "Run 'source ~/.cargo/env' or restart your terminal"
     fi
 
-mod juvy
+mod juvycore

@@ -1,13 +1,13 @@
 [workspace]
 resolver = "2"
-members = ["juvy", "xtask"]
+members = ["juvycore", "xtask"]
 
 [workspace.package]
 version = "0.0.2"
 edition = "2024"
 license = "MIT"
 homepage = "https://juvy.me"
-description = "Juvy Core Rust library"
+description = "JuvyCore Rust library"
 repository = "https://github.com/juvyme/core"
 documentation = "https://github.com/juvyme"
 readme = "./README.md"
