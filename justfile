@@ -1,6 +1,9 @@
 list:
     just --list
 
+build:
+    cargo build
+
 build-juvycore:
     just juvycore build
 

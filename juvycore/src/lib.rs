@@ -1,6 +1,11 @@
+pub mod models;
+
+pub use models::*;
+
 uniffi::setup_scaffolding!("juvycore");
+static LIB_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 #[uniffi::export]
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
+pub fn lib_version() -> String {
+    LIB_VERSION.to_string()
 }

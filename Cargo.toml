@@ -1,6 +1,11 @@
 [workspace]
 resolver = "2"
-members = ["juvycore", "xtask"]
+members = [
+  "juvycore",
+  "xtask",
+
+  "crates/primitives"
+]
 
 [workspace.package]
 version = "0.0.2"
@@ -14,4 +19,5 @@ readme = "./README.md"
 keywords = ["crypto", "messaging", "solana", "ethereum", "web3"]
 
 [workspace.dependencies]
+strum = { version = "0.27.1", features = ["derive"] }
 uniffi = { version = "0.30.0" }

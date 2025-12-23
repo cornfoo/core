@@ -14,4 +14,6 @@ keywords.workspace = true
 crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
+primitives = { path = "../crates/primitives" }
+strum.workspace = true
 uniffi = { workspace = true }
