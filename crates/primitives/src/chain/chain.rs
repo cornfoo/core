@@ -2,6 +2,7 @@ use std::fmt;
 use strum::{AsRefStr, EnumString};
 
 #[derive(AsRefStr, EnumString)]
+#[strum(serialize_all = "lowercase")]
 pub enum Chain {
     Bitcoin,
     Ethereum,
