@@ -1,0 +1,5 @@
+edition = "2021"
+max_width = 160
+reorder_imports = true
+imports_granularity = "One"
+group_imports = "One"

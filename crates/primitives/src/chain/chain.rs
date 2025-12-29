@@ -1,7 +1,10 @@
+use serde::{Deserialize, Serialize};
 use std::fmt;
 use strum::{AsRefStr, EnumString};
 
-#[derive(AsRefStr, EnumString)]
+use crate::AssetId;
+
+#[derive(Copy, Clone, Debug, Serialize, Deserialize, AsRefStr, EnumString, PartialEq, Eq, Hash)]
 #[strum(serialize_all = "lowercase")]
 pub enum Chain {
     Bitcoin,
@@ -16,6 +19,10 @@ impl fmt::Display for Chain {
 }
 
 impl Chain {
+    pub fn as_asset_id(&self) -> AssetId {
+        AssetId::from_chain(*self)
+    }
+
     pub fn rank(&self) -> i32 {
         match self {
             Self::Solana => 100,
