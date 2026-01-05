@@ -13,7 +13,7 @@ build-ios:
 install: install-rust install-typeshare
 
 install-typeshare:
-    echo "==> Installing Typeshare..."
+    @echo "==> Installing Typeshare..."
     cargo install typeshare-cli@1.13.4
 
 install-rust:
@@ -27,5 +27,9 @@ install-rust:
         echo "==> Rust installed successfully"
         echo "Run 'source ~/.cargo/env' or restart your terminal"
     fi
+
+services-up:
+    @echo "==> Starting docker"
+    docker compose up -d postgres
 
 mod juvycore
