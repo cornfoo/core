@@ -1,5 +1,5 @@
 [package]
-name = "api"
+name = "storage"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -12,13 +12,12 @@ keywords.workspace = true
 
 [dependencies]
 primitives = { workspace = true }
-settings = { workspace = true }
-storage = { workspace = true }
 
-actix-cors = "0.7.0"
-actix-web = "4"
+chrono = { workspace = true }
+deadpool-postgres ={ version = "0.14.1", features = ["rt_tokio_1"]}
+postgres-types = { version = "0.2.6", features = ["derive"] }
 serde = { workspace = true }
-serde_json = { workspace = true }
+thiserror = { workspace = true }
 tokio = { workspace = true }
-tracing = { workspace = true }
-tracing-subscriber = { workspace = true }
+tokio-postgres = { version = "0.7.13", features = ["with-chrono-0_4"] }
+tracing ={ workspace = true}
