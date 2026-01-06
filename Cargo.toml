@@ -4,8 +4,11 @@ members = [
   "juvycore",
   "xtask",
 
-  "crates/primitives"
-, "services/api"]
+  "crates/primitives",
+  "services/api",
+  "crates/settings",
+  "crates/storage"
+]
 
 [workspace.package]
 version = "0.0.2"
@@ -19,8 +22,16 @@ readme = "./README.md"
 keywords = ["crypto", "messaging", "solana", "ethereum", "web3"]
 
 [workspace.dependencies]
+primitives = { path = "crates/primitives" }
+settings = { path = "crates/settings" }
+storage = { path = "crates/storage" }
+
+chrono = { version = "0.4", features = ["serde"] }
 serde = { version = "1.0.226", features = ["derive"] }
-serde_json ={ version = "1.0.115"}
+serde_json = { version = "1.0.115" }
 strum = { version = "0.27.1", features = ["derive"] }
+thiserror = { version = "2.0.12" }
 tokio = { version = "1.48.0", features = ["macros", "rt-multi-thread"] }
+tracing = { version = "0.1.41" }
+tracing-subscriber = { version = "0.3.20", features = ["env-filter"] }
 uniffi = { version = "0.30.0" }

@@ -10,6 +10,9 @@ build-juvycore:
 build-ios:
     just juvycore build-ios
 
+watch-api:
+    cargo watch -x 'run -p api'
+
 install: install-rust install-typeshare
 
 install-typeshare:

@@ -1,0 +1,14 @@
+api:
+  host: "127.0.0.1"
+  port: 8080
+
+database:
+  host: "localhost"
+  port: 5432
+  name: "app"
+  user: "svc"
+  password: "password"
+  max_size: 10
+
+logging:
+  level: "debug"
