@@ -5,7 +5,7 @@ services:
     build: .
     command: ["/srv/api"]
     environment:
-      - DATABASE_URL=postgres://svc:password@postgres:5432/app
+      - DATABASE_URL=postgres://admin:password@postgres:5432/main
     ports:
       - "8080:8080"
     depends_on:
@@ -16,9 +16,9 @@ services:
     image: postgres:16-bookworm
     container_name: postgres
     environment:
-      - POSTGRES_USER=svc
+      - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=app
+      - POSTGRES_DB=main
     ports:
       - "5432:5432"
     volumes:

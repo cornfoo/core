@@ -20,8 +20,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq5 \
     && rm -rf /var/lib/apt/lists/*
 
-RUN useradd -r -s /bin/false svc
-USER svc
+RUN useradd -r -s /bin/false admin
+USER admin
 
 COPY --from=builder /build/api ./
 

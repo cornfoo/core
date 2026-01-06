@@ -44,7 +44,7 @@ impl PoolBuilder {
             .create_pool(Some(Runtime::Tokio1), NoTls)
             .map_err(|e| DbPoolError::ConfigError(e.to_string()))?;
 
-        let client = pool.get().await.map_err(DbPoolError::GetConnectionError)?;
+        let client = pool.get().await?;
         client
             .simple_query("SELECT 1")
             .await
@@ -66,8 +66,8 @@ mod tests {
         let config = PoolConfig {
             host: "localhost".to_string(),
             port: 5432,
-            name: "app".to_string(),
-            user: "svc".to_string(),
+            name: "main".to_string(),
+            user: "admin".to_string(),
             password: "password".to_string(),
             max_size: 10,
         };

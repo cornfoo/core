@@ -21,6 +21,7 @@ pub struct DeviceRow {
     pub os: Option<String>,
     pub model: Option<String>,
     pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -54,6 +55,7 @@ impl DeviceRow {
             os: row.try_get("os").ok(),
             model: row.try_get("model").ok(),
             created_at: row.get("created_at"),
+            updated_at: row.get("updated_at"),
         }
     }
 
@@ -136,7 +138,7 @@ impl DeviceClient {
                     "platform_store",
                 ],
             )
-            .returning("id, device_id, platform_store, token, locale, currency, is_push_enabled, is_price_alerts_enabled, version, subscriptions_version, os, model, created_at")
+            .returning("id, device_id, platform_store, token, locale, currency, is_push_enabled, is_price_alerts_enabled, version, subscriptions_version, os, model, created_at, updated_at")
             .build();
 
         let params: Vec<&(dyn ToSql + Sync)> = vec![
@@ -169,6 +171,28 @@ impl DeviceClient {
             .query_one(&stmt, &params)
             .await
             .map_err(DbPoolError::QueryError)?;
+
+        Ok(DeviceRow::from_row(&row))
+    }
+
+    pub async fn get_device(&self, device_id: &str) -> QueryResult<DeviceRow> {
+        let client = self
+            .pool
+            .inner
+            .get()
+            .await
+            .map_err(DbPoolError::GetConnectionError)?;
+
+        let stmt = client
+            .prepare("SELECT id, device_id, platform_store, token, locale, currency, is_push_enabled, is_price_alerts_enabled, version, subscriptions_version, os, model, created_at, updated_at FROM devices WHERE device_id = $1")
+            .await
+            .map_err(DbPoolError::QueryError)?;
+
+        let row = client
+            .query_opt(&stmt, &[&device_id])
+            .await
+            .map_err(DbPoolError::QueryError)?
+            .ok_or(DbPoolError::NotFound)?;
 
         Ok(DeviceRow::from_row(&row))
     }

@@ -3,7 +3,7 @@
  */
 use api::{devices, status};
 use settings::Settings;
-use storage::{DbClient, PoolBuilder};
+use storage::PoolBuilder;
 use {
     actix_web::{middleware, web, HttpServer},
     std::net::TcpListener,
@@ -12,6 +12,7 @@ use {
 pub fn configure(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web::scope("/v1")
+            .service(web::resource("/devices/{device_id}").route(web::get().to(devices::get_device)))
             .service(web::resource("/devices").route(web::post().to(devices::add_devices)))
             .service(web::resource("/health").route(web::get().to(status::get_health))),
     );
@@ -31,22 +32,13 @@ async fn main() -> std::io::Result<()> {
         .with_env_filter(env_filter)
         .init();
 
-    tracing::info!("Loaded settings: {:?}", settings);
-
-    let pool = PoolBuilder::new(settings.database)
-        .await
-        .expect("Failed to create database pool");
-
-    let db_client = DbClient::new(&pool).await;
-    match db_client.ping().await {
-        Ok(result) => {
-            tracing::info!("Database connection successful: {}", result);
-        }
+    let pool = match PoolBuilder::new(settings.database).await {
+        Ok(pool) => pool,
         Err(e) => {
-            tracing::error!("Database connection failed: {}", e);
+            tracing::error!(error = ?e, "Failed to create database pool");
             std::process::exit(1);
         }
-    }
+    };
 
     let addr = format!("{}:{}", settings.api.host, settings.api.port);
     let listener = TcpListener::bind(&addr)?;

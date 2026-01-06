@@ -5,8 +5,8 @@ api:
 database:
   host: "localhost"
   port: 5432
-  name: "app"
-  user: "svc"
+  name: "main"
+  user: "admin"
   password: "password"
   max_size: 10
 

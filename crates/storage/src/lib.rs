@@ -4,14 +4,13 @@ use tokio_postgres::{
     Row,
 };
 
-use crate::error::DbPoolError;
-
 pub mod builder;
 pub mod device;
 pub mod error;
 pub mod pool;
 
 pub use device::{DeviceClient, DeviceRow, UpdateDeviceRow};
+pub use error::DbPoolError;
 pub use pool::{PoolBuilder, PoolConfig};
 
 pub type QueryResult<T> = Result<T, DbPoolError>;
@@ -179,8 +178,8 @@ mod tests {
         let config = PoolConfig {
             host: "localhost".to_string(),
             port: 5432,
-            name: "app".to_string(),
-            user: "svc".to_string(),
+            name: "main".to_string(),
+            user: "admin".to_string(),
             password: "password".to_string(),
             max_size: 10,
         };

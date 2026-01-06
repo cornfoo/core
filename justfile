@@ -35,4 +35,5 @@ services-up:
     @echo "==> Starting docker"
     docker compose up -d postgres
 
+mod crates
 mod juvycore

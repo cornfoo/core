@@ -1,0 +1,29 @@
+MIGRATIONS_DIR := "storage/migrations"
+
+migrate-up:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    export GOOSE_DRIVER=postgres
+    export GOOSE_DBSTRING="${POSTGRES_URL}"
+    goose -dir "{{MIGRATIONS_DIR}}" up
+
+migrate-down:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    export GOOSE_DRIVER=postgres
+    export GOOSE_DBSTRING="${POSTGRES_URL}"
+    goose -dir "{{MIGRATIONS_DIR}}" down
+
+migrate-status:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    export GOOSE_DRIVER=postgres
+    export GOOSE_DBSTRING="${POSTGRES_URL}"
+    goose -dir "{{MIGRATIONS_DIR}}" status
+
+migrate-create NAME:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    export GOOSE_DRIVER=postgres
+    export GOOSE_DBSTRING="${POSTGRES_URL}"
+    goose -dir "{{MIGRATIONS_DIR}}" create "{{NAME}}" sql

@@ -14,4 +14,7 @@ pub enum DbPoolError {
 
     #[error("configuration error: {0}")]
     ConfigError(String),
+
+    #[error("not found")]
+    NotFound,
 }
